@@ -1,7 +1,15 @@
 import numpy as np
 
 
-def subset_list_randomly(dictionary) -> list:
+def subset_list_randomly(dictionary: list) -> list:
+    """Receives a dictionary of words and subsets it based on a random number
+
+    Args:
+        dictionary (list): List of words
+
+    Returns:
+        list: Subsetted list of words
+    """
     import random
     length = random.choice(range(4, 8))
 
@@ -57,17 +65,31 @@ def get_list(guess_letter: str, current_word: list, dictionary) -> list:
     return dictionary, current_word_iterations[index]
 
 
-def play_game():
+def process_file() -> list:
+    """Processes the dictionary file from file to a useable list
+
+    Returns:
+        list: Processed list from file
+    """
     from pathlib import Path
     file = Path("dictionary.txt")
     with open(file) as opened_file:
         dictionary = opened_file.read()
     dictionary = dictionary.upper()
-    dictionary = dictionary.split('\n')
+    return dictionary.split('\n')
+
+
+def play_game():
+    # get dictionary from file
+    dictionary = process_file()
+
+    # get a random length and partiion dictionary
     dictionary = subset_list_randomly(dictionary)
+
     # Declare vars
-    # Empty list the ength of the random words
+    # Empty list of underscores the length of the random words
     current_guess = ["_"] * len(dictionary[0])
+    # Empty user guesses
     guesses = []
 
     # Track state
