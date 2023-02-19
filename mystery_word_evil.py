@@ -1,6 +1,20 @@
 import numpy as np
 
 
+def process_file() -> list:
+    """Processes the dictionary file from file to a useable list
+
+    Returns:
+        list: Processed list from file
+    """
+    from pathlib import Path
+    file = Path("dictionary.txt")
+    with open(file) as opened_file:
+        dictionary = opened_file.read()
+    dictionary = dictionary.upper()
+    return dictionary.split('\n')
+
+
 def subset_list_randomly(dictionary: list) -> list:
     """Receives a dictionary of words and subsets it based on a random number
 
@@ -18,7 +32,19 @@ def subset_list_randomly(dictionary: list) -> list:
 
 
 def get_list(guess_letter: str, current_word: list, dictionary) -> list:
+    """Updates the list of possible words to the largest possibility of english words based on current guess
+
+    Args:
+        guess_letter (str): Letter guessed by user
+        current_word (list): List of past guesses / "_"
+        dictionary (List): All current possible words
+
+    Returns:
+        list: Returns dictionary, new current word
+    """
+
     #current_word_iterations = [current_word]*len(current_word)
+    # FOUND BEHAVIOR
     current_word_iterations = [
         list("".join(current_word)) for _ in range(len(current_word))]
     counter = 0
@@ -65,20 +91,6 @@ def get_list(guess_letter: str, current_word: list, dictionary) -> list:
     return dictionary, current_word_iterations[index]
 
 
-def process_file() -> list:
-    """Processes the dictionary file from file to a useable list
-
-    Returns:
-        list: Processed list from file
-    """
-    from pathlib import Path
-    file = Path("dictionary.txt")
-    with open(file) as opened_file:
-        dictionary = opened_file.read()
-    dictionary = dictionary.upper()
-    return dictionary.split('\n')
-
-
 def play_game():
     # get dictionary from file
     dictionary = process_file()
@@ -107,13 +119,23 @@ Current guess:
         guess = input("Take a guess! ").upper()
 
         print()
-        if guess in guesses:
+        # Ensure validity
+        if len(guess) > 1 or not guess.isalpha():
+            print(f'That guess is invalid.')
+            print(f'You have {guesses_remaining} guesses left.')
+            print()
+            print('Current guess:')
+            print(" ".join(current_guess))
+            print()
+        # Ensure not already guessed
+        elif guess in guesses:
             print(f'You already guessed {guess}! Try again?')
             print(f'You have {guesses_remaining} guesses left.')
             print()
             print('Current guess:')
             print(" ".join(current_guess))
             print()
+        # Ensure guess in possible words
         elif guess not in "".join(dictionary):
             guesses_remaining -= 1
             print(f'Sorry! {guess} was not in the word.')
@@ -123,8 +145,10 @@ Current guess:
             print(" ".join(current_guess))
             print()
         else:
+            # Get list of possible words, update current guess
             dictionary, current_guess = get_list(
                 guess, current_guess, dictionary)
+            # If all guesses correct
             if "_" not in current_guess:
                 print(f"YES! The word was {current_guess}")
                 print()
@@ -132,7 +156,8 @@ Current guess:
                     print()
                     play_game()
                 else:
-                    break
+                    return
+            # If guess correct but not complete
             else:
                 print(f'Yes! {guess} was in the word.')
                 print(f'You have {guesses_remaining} guesses left.')
@@ -140,14 +165,15 @@ Current guess:
                 print('Current guess:')
                 print(" ".join(current_guess))
                 print()
+        # Track past guesses
         guesses.append(guess)
-        # If loss
-    print(f"Good try! The word was {word}.")
-    if input("Play again? (y/n):") == y:
+    # If loss
+    print(f"Good try! The word was {dictionary[0]}.")
+    if input("Play again? (y/n):") == "y":
         print()
         play_game()
     else:
-        pass
+        return
 
 
 if __name__ == "__main__":
