@@ -93,12 +93,12 @@ def play_game():
     guesses = []
 
     # Track state
-    guesses_remaining = 15
+    guesses_remaining = 8
 
     # First tell user how many letters:
     print(f'''
 Welcome to ~EvIl~ Hangman!
-You secret word has {len(current_guess)} letters.
+Your secret word has {len(current_guess)} letters.
 
 Current guess:
 {" ".join(current_guess)}''')

@@ -1,9 +1,0 @@
-Ok so when you start we get a word of a random length
-
-Then you guess a letter, it checks to make sure there are words with that letter in it
-
-Then it removes all the words that dont have that letter in it
-
-Then it makes buckets f words thatbhave the letter in the open spaces of the possible word
-
-Returns the largest bucket as list of new word
