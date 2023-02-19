@@ -43,27 +43,31 @@ def get_list(guess_letter: str, current_word: list, dictionary) -> list:
         list: Returns dictionary, new current word
     """
 
-    #current_word_iterations = [current_word]*len(current_word)
-    # FOUND BEHAVIOR
+    # current_word_iterations = [current_word]*len(current_word)
+    # FOUND BEHAVIOR: Array assignment must be done via list comprehensions
+
     current_word_iterations = [
-        list("".join(current_word)) for _ in range(len(current_word))]
+        list("".join(current_word)) for _ in range(len(current_word))]  # Create (length of word) # of copies for possible combinations
     counter = 0
-    pop = []
+    pop = []  # Indexes to remove
+    # Fill iterations with guess at available slots
     for letter_list in current_word_iterations:
 
         if letter_list[counter] == "_":
             letter_list[counter] = guess_letter
         else:
+            # Mark spots for removal if they already have a letter
             pop.append(counter)
         counter += 1
 
+    # Remove all instances where possible word had conflicting letters
     counter = 0
     for ind in pop:
         ind -= counter
         current_word_iterations.pop(ind)
         counter += 1
 
-    # pair down the list further to only those that actually include the word
+    # pair down the list further to only those that actually include the guessed letter
     dictionary = list(filter(lambda word: guess_letter in word, dictionary))
 
     # make buckets
@@ -73,10 +77,11 @@ def get_list(guess_letter: str, current_word: list, dictionary) -> list:
     for word in dictionary:
         split_word = list(word)
         counter = 0
-
+        # Test each remaining word in the dictionary against all acceptable word combinations, ad if they pass place in bucket
         for test_word in current_word_iterations:
             word_fits = True
             index = 0
+            # This may be more efficientky done with a map or filter
             for test_letter in test_word:
                 if (test_letter != split_word[index] and
                         test_letter != "_"):
@@ -86,6 +91,7 @@ def get_list(guess_letter: str, current_word: list, dictionary) -> list:
                 words_buckets[counter].append(word)
             counter += 1
 
+    # Return the most populous bucket and the corresponding current guess
     dictionary = max(words_buckets, key=len)
     index = words_buckets.index(dictionary)
     return dictionary, current_word_iterations[index]
